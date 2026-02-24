@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026 H1 게임 산업 리스크·기회 레이더 (개선판)</title>
+  <style>
+    :root {
+      --primary: #667eea;
+      --secondary: #764ba2;
+      --red-border: #ff6b6b;
+      --red-bg: #fff5f5;
+      --yellow-border: #ffd43b;
+      --yellow-bg: #fff9db;
+      --green-border: #51cf66;
+      --green-bg: #ebfbee;
+      --shadow: 0 2px 8px rgba(0,0,0,0.1);
+      --shadow-hover: 0 8px 24px rgba(0,0,0,0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+      background: white;
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+
+    .header p {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    /* 매트릭스 히트맵 - 개선된 버전 */
+    .overview-heatmap {
+      background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+      padding: 2rem;
+      margin: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .overview-heatmap h2 {
+      margin: 0 0 1.5rem 0;
+      font-size: 1.5rem;
+      color: var(--primary);
+      text-align: center;
+    }
+
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: 120px repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 1rem;
+    }
+
+    .cell {
+      background: white;
+      padding: 16px;
+      border-radius: 12px;
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      border: 2px solid #e9ecef;
+      transition: all 0.3s;
+    }
+
+    .cell.header {
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+      min-height: 60px;
+      font-size: 1rem;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cell.label {
+      font-weight: 700;
+      color: white;
+      justify-content: center;
+      align-items: center;
+      font-size: 1rem;
+    }
+
+    .cell.risk-high.label { background: var(--red-border); }
+    .cell.risk-medium.label { background: var(--yellow-border); color: #333; }
+    .cell.risk-opportunity.label { background: var(--green-border); }
+
+    .cell.risk-high { 
+      border-color: var(--red-border); 
+      background: linear-gradient(to bottom, white, var(--red-bg)); 
+    }
+    .cell.risk-medium { 
+      border-color: var(--yellow-border); 
+      background: linear-gradient(to bottom, white, var(--yellow-bg)); 
+    }
+    .cell.risk-opportunity { 
+      border-color: var(--green-border); 
+      background: linear-gradient(to bottom, white, var(--green-bg)); 
+    }
+
+    /* 개선된 이슈 카드 (매트릭스용) */
+    .matrix-issue-card {
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      border: 2px solid #dee2e6;
+      transition: all 0.2s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .matrix-issue-number {
+  font-weight: 700;
+  font-size: 0.7rem;  /* 0.85rem → 0.7rem으로 축소 */
+  color: var(--primary);
+}
+
+.matrix-issue-title {
+  font-size: 1rem;  /* 0.7rem → 0.8rem으로 확대 */
+  font-weight: 700;
+  color: #495057;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+
+    .matrix-issue-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(102, 126, 234, 0.3);
+      border-color: var(--primary);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .matrix-issue-card:hover .matrix-issue-number,
+    .matrix-issue-card:hover .matrix-issue-title {
+      color: white;
+    }
+
+    .heatmap-hint {
+      text-align: center;
+      color: #6c757d;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      font-style: italic;
+    }
+
+    /* 탭 네비게이션 */
+    .tabs {
+      display: flex;
+      gap: 0;
+      padding: 1.5rem 2rem 0;
+      background: #f8f9fa;
+      border-bottom: 2px solid #dee2e6;
+      overflow-x: auto;
+    }
+
+    .tab {
+      padding: 1rem 1.5rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #6c757d;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .tab:hover {
+      color: var(--primary);
+      background: rgba(102, 126, 234, 0.05);
+    }
+
+    .tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: white;
+    }
+
+    /* 필터 섹션 */
+    .filter-section {
+      padding: 1.5rem 2rem;
+      background: #f8f9fa;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .filter-group {
+      margin-bottom: 1rem;
+    }
+
+    .filter-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .filter-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #495057;
+      font-size: 0.9rem;
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 0.5rem 1rem;
+      border: 2px solid #dee2e6;
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .filter-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    .search-box {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    .search-box:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    /* 통계 대시보드 */
+    .stats-dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      padding: 1.5rem 2rem;
+      background: white;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card h3 {
+      font-size: 2rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-card p {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .stat-card.high { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); }
+    .stat-card.medium { background: linear-gradient(135deg, #ffd43b 0%, #fab005 100%); }
+    .stat-card.opportunity { background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%); }
+
+    /* 범례 - 위로 이동 */
+    .legend {
+      display: flex;
+      gap: 3rem;
+      padding: 1.5rem 2rem;
+      background: #f8f9fa;
+      flex-wrap: wrap;
+      justify-content: center;
+      border-top: 1px solid #dee2e6;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .legend-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .legend-group strong {
+      font-size: 0.95rem;
+      color: #495057;
+    }
+
+    .legend-items {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .legend-color {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      border: 2px solid #dee2e6;
+    }
+
+    .legend-color.high { background: var(--red-bg); border-color: var(--red-border); }
+    .legend-color.medium { background: var(--yellow-bg); border-color: var(--yellow-border); }
+    .legend-color.opportunity { background: var(--green-bg); border-color: var(--green-border); }
+
+    .legend-color.short { background: #ff6b6b; border: none; }
+    .legend-color.mid { background: #ffa94d; border: none; }
+    .legend-color.ongoing { background: #74c0fc; border: none; }
+
+    /* 카드 그리드 */
+    .cards-container {
+      padding: 2rem;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: white;
+      border: 3px solid #e9ecef;
+      border-radius: 14px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      transition: all 0.3s;
+      cursor: pointer;
+      position: relative;
+      display: none;
+    }
+
+    .card.visible {
+      display: block;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    /* 리스크 레벨별 카드 배경색 - 더 강조 */
+    .card.risk-high {
+      border: 3px solid var(--red-border);
+      background: linear-gradient(to bottom, white, var(--red-bg));
+    }
+
+    .card.risk-medium {
+      border: 3px solid var(--yellow-border);
+      background: linear-gradient(to bottom, white, var(--yellow-bg));
+    }
+
+    .card.risk-opportunity {
+      border: 3px solid var(--green-border);
+      background: linear-gradient(to bottom, white, var(--green-bg));
+    }
+
+    /* 개선된 카드 헤더 - 배지를 더 명확하게 */
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+      gap: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid rgba(0,0,0,0.05);
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #212529;
+      flex: 1;
+    }
+
+    /* 개선된 배지 영역 */
+    .card-badges {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: flex-end;
+      flex-shrink: 0;
+    }
+
+    .risk-badge {
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .risk-badge.high {
+      background: var(--red-border);
+      color: white;
+    }
+
+    .risk-badge.medium {
+      background: var(--yellow-border);
+      color: #333;
+    }
+
+    .risk-badge.opportunity {
+      background: var(--green-border);
+      color: white;
+    }
+
+    .timing-badge {
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .timing-badge.short {
+      background: #ff6b6b;
+      color: white;
+    }
+
+    .timing-badge.mid {
+      background: #ffa94d;
+      color: white;
+    }
+
+    .timing-badge.ongoing {
+      background: #74c0fc;
+      color: white;
+    }
+
+    .card-body {
+      color: #495057;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .card-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .expand-btn {
+      background: transparent;
+      border: none;
+      color: var(--primary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .expand-btn:hover {
+      color: var(--secondary);
+    }
+
+    .card-action {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+      opacity: 0;
+      margin-top: 0;
+    }
+
+    .card.expanded .card-action {
+      max-height: 500px;
+      opacity: 1;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 2px solid #e9ecef;
+    }
+
+    .card.expanded .expand-btn::after {
+      content: ' ▲';
+    }
+
+    .card:not(.expanded) .expand-btn::after {
+      content: ' ▼';
+    }
+
+    .action-content {
+      color: #495057;
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    .action-content ul {
+      margin-left: 1.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .action-content li {
+      margin-bottom: 0.5rem;
+    }
+
+    /* 빈 상태 */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #6c757d;
+      display: none;
+    }
+
+    .empty-state.visible {
+      display: block;
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    /* 하이라이트 펄스 */
+    @keyframes highlight-pulse {
+      0%, 100% { box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3); }
+      50% { box-shadow: 0 8px 40px rgba(102, 126, 234, 0.6); transform: scale(1.02); }
+    }
+
+    .highlight-pulse {
+      animation: highlight-pulse 0.6s ease-in-out 3;
+    }
+
+    /* 반응형 */
+    @media (max-width: 768px) {
+      .header h1 { font-size: 1.5rem; }
+      .tabs { padding: 1rem 1rem 0; }
+      .tab { padding: 0.75rem 1rem; font-size: 0.9rem; }
+      .filter-section { padding: 1rem; }
+      .stats-dashboard { grid-template-columns: 1fr 1fr; gap: 0.75rem; padding: 1rem; }
+      .cards-container { padding: 1rem; }
+      .cards-grid { grid-template-columns: 1fr; gap: 1rem; }
+      
+      .heatmap-grid {
+        grid-template-columns: 100px 1fr;
+        gap: 8px;
+      }
+      
+      .cell.header:not(:first-child):not(:nth-child(2)) { display: none; }
+      .cell:nth-child(4n), .cell:nth-child(4n+1) { 
+        grid-column: 1 / -1; 
+      }
+      
+      .matrix-issue-card { font-size: 0.7rem; padding: 8px; }
+      .matrix-issue-number { font-size: 0.8rem; }
+      .matrix-issue-title { font-size: 0.65rem; }
+      
+      .legend { gap: 1.5rem; }
+      .legend-group { flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 헤더 -->
+    <div class="header">
+      <h1>🎮 2026 H1 게임 산업 리스크·기회 레이더</h1>
+      <p>정책·플랫폼·시장·기술 전방위 모니터링 맵</p>
+    </div>
+
+    <!-- 매트릭스 히트맵 - 개선 버전 -->
+    <div class="overview-heatmap">
+      <h2>📊 전체 이슈 매트릭스 (34건)</h2>
+      <div class="heatmap-grid">
+        <!-- 헤더 -->
+        <div class="cell header"></div>
+        <div class="cell header">⚡ 단기/즉시</div>
+        <div class="cell header">📅 중기/예정</div>
+        <div class="cell header">🔄 상시/반복</div>
+        
+        <!-- HIGH ROW (7건) -->
+        <div class="cell label risk-high">🔴 HIGH<br>(7건)</div>
+        <div class="cell risk-high timing-short">
+          <div class="matrix-issue-card" onclick="scrollToCard('1-2')">
+            <div class="matrix-issue-number">1-2</div>
+            <div class="matrix-issue-title">FTC 미성년자 보호 집행 강화</div>
+          </div>
+          <div class="matrix-issue-card" onclick="scrollToCard('1-4')">
+            <div class="matrix-issue-number">1-4</div>
+            <div class="matrix-issue-title">인도 RMG 전면 금지</div>
+          </div>
+          <div class="matrix-issue-card" onclick="scrollToCard('2-4')">
+            <div class="matrix-issue-number">2-4</div>
+            <div class="matrix-issue-title">Google Play 대안결제 개방</div>
+          </div>
+        </div>
+        <div class="cell risk-high timing-mid">
+          <div class="matrix-issue-card" onclick="scrollToCard('1-9')">
+            <div class="matrix-issue-number">1-9</div>
+            <div class="matrix-issue-title">YouTube Web3 도박 규제</div>
+          </div>
+        </div>
+        <div class="cell risk-high timing-ongoing">
+          <div class="matrix-issue-card" onclick="scrollToCard('1-1')">
+            <div class="matrix-issue-number">1-1</div>
+            <div class="matrix-issue-title">루트박스 글로벌 규제 확산</div>
+          </div>
+          <div class="matrix-issue-card" onclick="scrollToCard('1-3')">
+            <div class="matrix-issue-number">1-3</div>
+            <div class="matrix-issue-title">AI 복합 규제</div>
+          </div>
+        </div>
+        
+        <!-- MEDIUM ROW (16건) -->
+        <div class="cell label risk-medium">🟡 MEDIUM<br>(16건)</div>
+        <div class="cell risk-medium timing-short">
+          <div class="matrix-issue-card" onclick="scrollToCard('2-1')">
+            <div class="matrix-issue-number">2-1</div>
+            <div class="matrix-issue-title">앱스토어 수수료 규제 지속</div>
+          </div>
+          <div class="matrix-issue-card" onclick="scrollToCard('3-1')">
+            <div class="matrix-issue-number">3-1</div>
+            <div class="matrix-issue-title">인디·중소 경쟁 심화</div>
+          </div>
+          <div class="matrix-issue-card" onclick="scrollToCard('3-2')">
+            <div class="matrix-issue-number">3-2</div>
+            <div class="matrix-issue-title">IP 라이선스 비용 급등</div>
+          </div>
+        </div>
+        <div class="cell risk-medium timing-mid">
+          <div class="matrix-issue-card" onclick="scrollToCard('1-7')">
+            <div class="matrix-issue-number">1-7</div>
+            <div class="matrix-issue-title">UGC·모딩 IP 규제 명확화</div>
+          </div>
+          <div class="matrix-issue-card" onclick="scrollToCard('3-6')">
+            <div class="matrix-issue-number">3-6</div>
+            <div class="matrix-issue-title">개발자 AI 피로감 급증</div>
+          </div>
+          <div class="matrix-issue-card" onclick="scrollToCard('4-4')">
+            <div class="matrix-issue-number">4-4</div>
+            <div class="matrix-issue-title">보안 취약점 공격 증가</div>
+          </div>
+        </div>
+        <div class="cell risk-medium timing-ongoing">
+          <div class="matrix-issue-card" onclick="scrollToCard('1-5')">
+            <div class="matrix-issue-number">1-5</div>
+            <div class="matrix-issue-title">다크패턴 규제 강화</div>
+          </div>
+          <div class="matrix-issue-card" onclick="scrollToCard('2-2')">
+            <div class="matrix-issue-number">2-2</div>
+            <div class="matrix-issue-title">플랫폼 콘텐츠 심의 강화</div>
+          </div>
+          <div class="matrix-issue-card" onclick="scrollToCard('3-3')">
+            <div class="matrix-issue-number">3-3</div>
+            <div class="matrix-issue-title">라이브옵스 운영비 증가</div>
+          </div>
+          <div class="matrix-issue-card" onclick="scrollToCard('4-1')">
+            <div class="matrix-issue-number">4-1</div>
+            <div class="matrix-issue-title">개인정보 보호 규제 강화</div>
+          </div>
+        </div>
+        
+        <!-- OPPORTUNITY ROW (11건) -->
+        <div class="cell label risk-opportunity">🟢 OPPORTUNITY<br>(11건)</div>
+        <div class="cell risk-opportunity timing-short">
+          <div class="matrix-issue-card" onclick="scrollToCard('1-6')">
+            <div class="matrix-issue-number">1-6</div>
+            <div class="matrix-issue-title">게임 접근성 법제화</div>
+          </div>
+          <div class="matrix-issue-card" onclick="scrollToCard('2-3')">
+            <div class="matrix-issue-number">2-3</div>
+            <div class="matrix-issue-title">PC 대안 플랫폼 성장</div>
+          </div>
+          <div class="matrix-issue-card" onclick="scrollToCard('3-5')">
+            <div class="matrix-issue-number">3-5</div>
+            <div class="matrix-issue-title">구독 모델 게임 성장</div>
+          </div>
+          <div class="matrix-issue-card" onclick="scrollToCard('4-2')">
+            <div class="matrix-issue-number">4-2</div>
+            <div class="matrix-issue-title">클라우드 게임 인프라 보급</div>
+          </div>
+        </div>
+        <div class="cell risk-opportunity timing-mid">
+          <div class="matrix-issue-card" onclick="scrollToCard('1-8')">
+            <div class="matrix-issue-number">1-8</div>
+            <div class="matrix-issue-title">블록체인·NFT 규제 프레임워크</div>
+          </div>
+          <div class="matrix-issue-card" onclick="scrollToCard('4-3')">
+            <div class="matrix-issue-number">4-3</div>
+            <div class="matrix-issue-title">AI NPC·대화형 게임플레이</div>
+          </div>
+          <div class="matrix-issue-card" onclick="scrollToCard('4-5')">
+            <div class="matrix-issue-number">4-5</div>
+            <div class="matrix-issue-title">크로스플랫폼 멀티플레이</div>
+          </div>
+        </div>
+        <div class="cell risk-opportunity timing-ongoing">
+          <div class="matrix-issue-card" onclick="scrollToCard('1-10')">
+            <div class="matrix-issue-number">1-10</div>
+            <div class="matrix-issue-title">생성형 AI 저작권 법리 성숙</div>
+          </div>
+          <div class="matrix-issue-card" onclick="scrollToCard('3-4')">
+            <div class="matrix-issue-number">3-4</div>
+            <div class="matrix-issue-title">신흥 시장 모바일 게임 확산</div>
+          </div>
+          <div class="matrix-issue-card" onclick="scrollToCard('3-7')">
+            <div class="matrix-issue-number">3-7</div>
+            <div class="matrix-issue-title">e스포츠 지역리그 활성화</div>
+          </div>
+          <div class="matrix-issue-card" onclick="scrollToCard('4-6')">
+            <div class="matrix-issue-number">4-6</div>
+            <div class="matrix-issue-title">오픈소스 게임 엔진 성숙</div>
+          </div>
+        </div>
+      </div>
+      <p class="heatmap-hint">💡 각 이슈 카드를 클릭하면 상세 내용으로 이동합니다</p>
+    </div>
+
+    <!-- 탭 네비게이션 -->
+    <div class="tabs">
+      <button class="tab active" onclick="filterByArea('all')">🌐 전체</button>
+      <button class="tab" onclick="filterByArea('regulation')">⚖️ 규제/정책</button>
+      <button class="tab" onclick="filterByArea('platform')">🎯 플랫폼/유통</button>
+      <button class="tab" onclick="filterByArea('market')">📊 시장/사업</button>
+      <button class="tab" onclick="filterByArea('tech')">⚙️ 기술/운영</button>
+    </div>
+
+    <!-- 필터 섹션 -->
+    <div class="filter-section">
+      <div class="filter-group">
+        <label>🕐 시급성 필터</label>
+        <div class="filter-buttons">
+          <button class="filter-btn active" onclick="filterByTiming('all')">전체</button>
+          <button class="filter-btn" onclick="filterByTiming('short')">⚡ 단기/즉시</button>
+          <button class="filter-btn" onclick="filterByTiming('mid')">📅 중기/예정</button>
+          <button class="filter-btn" onclick="filterByTiming('ongoing')">🔄 상시/반복</button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <label>🎯 리스크 레벨 필터</label>
+        <div class="filter-buttons">
+          <button class="filter-btn active" onclick="filterByRisk('all')">전체</button>
+          <button class="filter-btn" onclick="filterByRisk('high')">🔴 HIGH</button>
+          <button class="filter-btn" onclick="filterByRisk('medium')">🟡 MEDIUM</button>
+          <button class="filter-btn" onclick="filterByRisk('opportunity')">🟢 OPPORTUNITY</button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <label>🔍 키워드 검색</label>
+        <input type="text" class="search-box" id="searchInput" placeholder="제목, 내용, 키워드로 검색...">
+      </div>
+    </div>
+
+    <!-- 통계 대시보드 -->
+    <div class="stats-dashboard">
+      <div class="stat-card">
+        <h3 id="totalCount">34</h3>
+        <p>전체 이슈</p>
+      </div>
+      <div class="stat-card high">
+        <h3 id="highCount">7</h3>
+        <p>HIGH 리스크</p>
+      </div>
+      <div class="stat-card medium">
+        <h3 id="mediumCount">16</h3>
+        <p>MEDIUM 리스크</p>
+      </div>
+      <div class="stat-card opportunity">
+        <h3 id="oppCount">11</h3>
+        <p>기회 요인</p>
+      </div>
+    </div>
+
+    <!-- 범례 - 위로 이동 -->
+    <div class="legend">
+      <div class="legend-group">
+        <strong>리스크 레벨:</strong>
+        <div class="legend-items">
+          <div class="legend-item">
+            <div class="legend-color high"></div>
+            <span>🔴 HIGH</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color medium"></div>
+            <span>🟡 MEDIUM</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color opportunity"></div>
+            <span>🟢 OPPORTUNITY</span>
+          </div>
+        </div>
+      </div>
+      <div class="legend-group">
+        <strong>시급성:</strong>
+        <div class="legend-items">
+          <div class="legend-item">
+            <div class="legend-color short"></div>
+            <span>⚡ 단기/즉시</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color mid"></div>
+            <span>📅 중기/예정</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color ongoing"></div>
+            <span>🔄 상시/반복</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 카드 컨테이너 -->
+    <div class="cards-container">
+      <div class="cards-grid" id="cardsGrid">
+        
+        <!-- 규제/정책 영역 -->
+        <!-- 1-1: HIGH, 상시 -->
+        <div class="card risk-high timing-ongoing visible" data-area="regulation" data-timing="ongoing" data-risk="high" data-issue="1-1" data-keywords="루트박스 미성년자 보호 규제">
+          <div class="card-header">
+            <div class="card-title">1-1. 루트박스 글로벌 규제 확산</div>
+            <div class="card-badges">
+              <span class="risk-badge high">🔴 HIGH</span>
+              <span class="timing-badge ongoing">🔄 상시</span>
+            </div>
+          </div>
+          <div class="card-body">
+            EU/미국/아시아 각국에서 미성년자 보호 중심 루트박스 규제 움직임 지속. 중국 확률 공개, EU 도박법 적용 논의, 미국 주(州) 단위 입법 시도 활발.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>16세 미만 결제 차단, 부모 동의 필수화</li>
+                <li>확률 투명 공개 (국가별 맞춤)</li>
+                <li>배틀패스·직구매 BM 병행 개발</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1-2: HIGH, 단기 -->
+        <div class="card risk-high timing-short visible" data-area="regulation" data-timing="short" data-risk="high" data-issue="1-2" data-keywords="FTC 미성년자 HoYoverse 벌금">
+          <div class="card-header">
+            <div class="card-title">1-2. FTC 미성년자 보호 집행 강화</div>
+            <div class="card-badges">
+              <span class="risk-badge high">🔴 HIGH</span>
+              <span class="timing-badge short">⚡ 단기</span>
+            </div>
+          </div>
+          <div class="card-body">
+            2025년 1월 FTC가 HoYoverse(Genshin Impact)에 $20M 벌금 및 16세 이하 루트박스 금지 명령. 미성년자 데이터 무단 수집·판매도 제재. 미국 시장 COPPA 집행 강화 신호.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>16세 이하 루트박스 결제 차단 시스템 즉시 구현</li>
+                <li>COPPA 준수: 부모 동의 없는 데이터 수집 금지</li>
+                <li>전사적 컴플라이언스 점검 (법무팀 주도)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1-3: HIGH, 상시 -->
+        <div class="card risk-high timing-ongoing visible" data-area="regulation" data-timing="ongoing" data-risk="high" data-issue="1-3" data-keywords="AI 생성 콘텐츠 규제">
+          <div class="card-header">
+            <div class="card-title">1-3. AI 복합 규제 (EU AI Act 등)</div>
+            <div class="card-badges">
+              <span class="risk-badge high">🔴 HIGH</span>
+              <span class="timing-badge ongoing">🔄 상시</span>
+            </div>
+          </div>
+          <div class="card-body">
+            EU AI Act(2026-08 고위험 시스템 시행), 미국 주(州)별 AI 투명성 법안, 한국 AI 기본법 등 다층 규제 본격화. 게임 내 AI NPC/챗봇, 생성형 UGC 심의·책임 범위 불명확.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>AI 기능별 리스크 분류 (고위험 여부 판단)</li>
+                <li>투명성 확보: AI 생성 콘텐츠 표시, 모델 설명 문서화</li>
+                <li>법률 자문·정책팀 AI 규제 전담 TF 구성</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1-4: HIGH, 단기 -->
+        <div class="card risk-high timing-short visible" data-area="regulation" data-timing="short" data-risk="high" data-issue="1-4" data-keywords="인도 RMG 금지 실물화폐">
+          <div class="card-header">
+            <div class="card-title">1-4. 인도 RMG 전면 금지 (2025-08 시행)</div>
+            <div class="card-badges">
+              <span class="risk-badge high">🔴 HIGH</span>
+              <span class="timing-badge short">⚡ 단기</span>
+            </div>
+          </div>
+          <div class="card-body">
+            인도 온라인게임법(2025-08-22 통과)은 실물화폐 게임(RMG) 전면 금지, 위반 시 최대 3년 징역·1억 루피 벌금. e-스포츠·스킬게임·소셜게임만 허용. 인도 시장 BM 전면 재설계 필요.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>RMG 요소(리얼머니 보상·현금화) 전면 제거</li>
+                <li>스킬 기반 e-스포츠/소셜 모델로 전환</li>
+                <li>인도 현지 법률 자문 통해 화이트리스트 확보</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1-5: MEDIUM, 상시 -->
+        <div class="card risk-medium timing-ongoing visible" data-area="regulation" data-timing="ongoing" data-risk="medium" data-issue="1-5" data-keywords="다크패턴 UI 규제">
+          <div class="card-header">
+            <div class="card-title">1-5. 다크패턴 규제 강화</div>
+            <div class="card-badges">
+              <span class="risk-badge medium">🟡 MEDIUM</span>
+              <span class="timing-badge ongoing">🔄 상시</span>
+            </div>
+          </div>
+          <div class="card-body">
+            EU DMA·한국 2025년 다크패턴 금지법 등 소비자 기만 UI/UX 제재 확대. 자동갱신, 취소 어렵게 만들기, 긴급 타이머 남용 등이 타깃.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>UI/UX 가이드라인 정비: 명확한 취소 버튼, 타이머 남용 금지</li>
+                <li>법무·UX팀 합동 감사</li>
+                <li>투명한 가격 표시·자동갱신 안내 의무화</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1-6: OPPORTUNITY, 단기 -->
+        <div class="card risk-opportunity timing-short visible" data-area="regulation" data-timing="short" data-risk="opportunity" data-issue="1-6" data-keywords="접근성 법안 장애인">
+          <div class="card-header">
+            <div class="card-title">1-6. 게임 접근성 법제화 (미국 GAMES Act 등)</div>
+            <div class="card-badges">
+              <span class="risk-badge opportunity">🟢 OPPORTUNITY</span>
+              <span class="timing-badge short">⚡ 단기</span>
+            </div>
+          </div>
+          <div class="card-body">
+            미국 GAMES Act(H.R.3219), 유럽 접근성 법(EAA)이 게임 접근성 기준 제시. 준수 시 장애인 유저층 확대, ESG 평가 우대 기대.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>접근성 기능 로드맵 수립 (자막, 색약 모드, 간편 조작 등)</li>
+                <li>ESG 보고서에 접근성 개선 사례 포함</li>
+                <li>장애인 게이머 커뮤니티 파트너십 구축</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1-7: MEDIUM, 중기 -->
+        <div class="card risk-medium timing-mid visible" data-area="regulation" data-timing="mid" data-risk="medium" data-issue="1-7" data-keywords="UGC 모딩 저작권">
+          <div class="card-header">
+            <div class="card-title">1-7. UGC·모딩 IP 규제 명확화</div>
+            <div class="card-badges">
+              <span class="risk-badge medium">🟡 MEDIUM</span>
+              <span class="timing-badge mid">📅 중기</span>
+            </div>
+          </div>
+          <div class="card-body">
+            Roblox, Fortnite 등 UGC 플랫폼 성장 속 제3자 IP 침해 이슈 부각. 플랫폼 책임 범위·저작권 필터링 의무 논의 진행 중.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>UGC 업로드 전 IP 필터링 시스템 도입</li>
+                <li>크리에이터 IP 가이드라인 공개·교육</li>
+                <li>안전항만(Safe Harbor) 조건 충족 (DMCA 준수)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1-8: OPPORTUNITY, 중기 -->
+        <div class="card risk-opportunity timing-mid visible" data-area="regulation" data-timing="mid" data-risk="opportunity" data-issue="1-8" data-keywords="블록체인 NFT 규제 프레임워크">
+          <div class="card-header">
+            <div class="card-title">1-8. 블록체인·NFT 규제 프레임워크 정립</div>
+            <div class="card-badges">
+              <span class="risk-badge opportunity">🟢 OPPORTUNITY</span>
+              <span class="timing-badge mid">📅 중기</span>
+            </div>
+          </div>
+          <div class="card-body">
+            EU MiCA, 미국 CLARITY Act(NFT 증권 분류) 등 글로벌 디지털자산 규제 윤곽 형성. 명확해진 규칙 속에서 Web3 게임 재진입 기회 모색 가능.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>NFT를 선택적/장식용 요소로 격리, 게임 핵심과 분리</li>
+                <li>컴플라이언스 확보 후 시범 프로젝트 런칭</li>
+                <li>블록체인 법무 전문가 자문 상시 배치</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1-9: HIGH, 중기 -->
+        <div class="card risk-high timing-mid visible" data-area="regulation" data-timing="mid" data-risk="high" data-issue="1-9" data-keywords="YouTube Web3 NFT 도박">
+          <div class="card-header">
+            <div class="card-title">1-9. YouTube Web3 콘텐츠 도박 규제 (2025-11)</div>
+            <div class="card-badges">
+              <span class="risk-badge high">🔴 HIGH</span>
+              <span class="timing-badge mid">📅 중기</span>
+            </div>
+          </div>
+          <div class="card-body">
+            YouTube가 NFT/토큰 거래 콘텐츠를 도박 카테고리로 분류, 수익화 제한. 블록체인 게임 마케팅·스트리밍 채널 타격 우려.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>YouTube 외 Twitch, Discord, X 등 다채널 홍보 전략</li>
+                <li>블록체인 요소를 선택 사항으로 디자인, 게임성 중심 홍보</li>
+                <li>스트리머 가이드라인 제공: 토큰 거래 언급 최소화</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1-10: OPPORTUNITY, 상시 -->
+        <div class="card risk-opportunity timing-ongoing visible" data-area="regulation" data-timing="ongoing" data-risk="opportunity" data-issue="1-10" data-keywords="생성 AI 저작권 판례">
+          <div class="card-header">
+            <div class="card-title">1-10. 생성형 AI 저작권 법리 성숙</div>
+            <div class="card-badges">
+              <span class="risk-badge opportunity">🟢 OPPORTUNITY</span>
+              <span class="timing-badge ongoing">🔄 상시</span>
+            </div>
+          </div>
+          <div class="card-body">
+            AI 학습 데이터 저작권 소송·판례 축적 중. 명확한 가이드라인 정립 시 AI 도구 활용 법적 불확실성 감소 → 생산성 증대 기회.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>라이선스 확보된 AI 도구 우선 도입</li>
+                <li>법무팀과 AI 학습 데이터 출처 검증 프로세스 수립</li>
+                <li>판례 모니터링 통해 최신 가이드라인 반영</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 플랫폼/유통 영역 -->
+        <!-- 2-1: MEDIUM, 단기 -->
+        <div class="card risk-medium timing-short visible" data-area="platform" data-timing="short" data-risk="medium" data-issue="2-1" data-keywords="앱스토어 수수료 규제">
+          <div class="card-header">
+            <div class="card-title">2-1. 앱스토어 수수료 규제 지속</div>
+            <div class="card-badges">
+              <span class="risk-badge medium">🟡 MEDIUM</span>
+              <span class="timing-badge short">⚡ 단기</span>
+            </div>
+          </div>
+          <div class="card-body">
+            EU DMA, 한국 인앱결제법, 미국 Epic 소송 여파로 Apple·Google 수수료 정책 변화 진행형. 대안결제 허용 확대 추세.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>대안결제 시스템(PG사 직연동) 도입 준비</li>
+                <li>지역별 수수료 정책 모니터링, 유리한 시장 우선 적용</li>
+                <li>플랫폼 협상력 확보 위해 D2C 웹사이트 병행 운영</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2-2: MEDIUM, 상시 -->
+        <div class="card risk-medium timing-ongoing visible" data-area="platform" data-timing="ongoing" data-risk="medium" data-issue="2-2" data-keywords="플랫폼 심의 정책">
+          <div class="card-header">
+            <div class="card-title">2-2. 플랫폼 콘텐츠 심의 강화</div>
+            <div class="card-badges">
+              <span class="risk-badge medium">🟡 MEDIUM</span>
+              <span class="timing-badge ongoing">🔄 상시</span>
+            </div>
+          </div>
+          <div class="card-body">
+            Steam, Google Play, App Store 모두 정치적 콘텐츠·폭력·성적 표현 가이드라인 엄격화. 리젝 리스크 증가, 재심 프로세스 장기화.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>출시 전 플랫폼별 가이드라인 체크리스트 운영</li>
+                <li>등급 분류 전문가 사전 자문</li>
+                <li>민감 콘텐츠 토글 옵션 제공 (유저 선택 가능)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2-3: OPPORTUNITY, 단기 -->
+        <div class="card risk-opportunity timing-short visible" data-area="platform" data-timing="short" data-risk="opportunity" data-issue="2-3" data-keywords="PC 플랫폼 경쟁 대안">
+          <div class="card-header">
+            <div class="card-title">2-3. PC 대안 플랫폼 성장 (Epic, MS PC Game Pass)</div>
+            <div class="card-badges">
+              <span class="risk-badge opportunity">🟢 OPPORTUNITY</span>
+              <span class="timing-badge short">⚡ 단기</span>
+            </div>
+          </div>
+          <div class="card-body">
+            Epic Games Store 무료 배포 전략, Xbox PC Game Pass 구독 모델로 Steam 독점 구도 약화. 멀티 플랫폼 출시 시 협상력·노출 증대.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>Epic 독점/무료 배포 딜 적극 탐색</li>
+                <li>Game Pass 입성 협상 (안정 수익 vs 노출 트레이드오프 검토)</li>
+                <li>Steam과 병행 출시로 최대 도달 범위 확보</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2-4: HIGH, 단기 -->
+        <div class="card risk-high timing-short visible" data-area="platform" data-timing="short" data-risk="high" data-issue="2-4" data-keywords="Google Play 대안결제 미국">
+          <div class="card-header">
+            <div class="card-title">2-4. Google Play 미국 대안결제 전면 개방 (2025-10)</div>
+            <div class="card-badges">
+              <span class="risk-badge high">🔴 HIGH</span>
+              <span class="timing-badge short">⚡ 단기</span>
+            </div>
+          </div>
+          <div class="card-body">
+            Epic Games 소송 결과로 미국 내 Google Play가 제3자 결제 무수수료 허용. 개발사는 자체 결제 시스템 도입 시 30% 수수료 절감 가능. 플랫폼 수익 구조 재편 기회.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>자체 PG 시스템 즉시 구축 (Stripe, PayPal 등)</li>
+                <li>절감된 수수료로 프로모션·유저 혜택 강화</li>
+                <li>D2C 인프라 조기 확보, 플랫폼 의존도 분산</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 시장/사업 영역 -->
+        <!-- 3-1: MEDIUM, 단기 -->
+        <div class="card risk-medium timing-short visible" data-area="market" data-timing="short" data-risk="medium" data-issue="3-1" data-keywords="인디 경쟁 심화 AI UGC">
+          <div class="card-header">
+            <div class="card-title">3-1. 인디·중소 개발사 경쟁 심화</div>
+            <div class="card-badges">
+              <span class="risk-badge medium">🟡 MEDIUM</span>
+              <span class="timing-badge short">⚡ 단기</span>
+            </div>
+          </div>
+          <div class="card-body">
+            AI·UGC 도구 보급으로 개인 개발자도 고품질 게임 제작 가능. Steam 일일 출시 게임 수 급증, 레드오션 심화. 차별화 없으면 묻힘.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>독창적 IP·스토리 중심 기획 강화</li>
+                <li>마케팅 예산 확보, 인플루언서 협업 조기 시작</li>
+                <li>베타 커뮤니티 조기 구축, 입소문 극대화</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3-2: MEDIUM, 단기 -->
+        <div class="card risk-medium timing-short visible" data-area="market" data-timing="short" data-risk="medium" data-issue="3-2" data-keywords="IP 라이선스 비용 상승">
+          <div class="card-header">
+            <div class="card-title">3-2. IP 라이선스 비용 급등</div>
+            <div class="card-badges">
+              <span class="risk-badge medium">🟡 MEDIUM</span>
+              <span class="timing-badge short">⚡ 단기</span>
+            </div>
+          </div>
+          <div class="card-body">
+            인기 영화·만화·스포츠 IP 라이선스 경쟁 과열. 계약 금액 상승, 수익 분배 조건 악화로 중소 퍼블리셔 접근 어려움.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>자체 IP 육성 전략 (장기 로드맵 수립)</li>
+                <li>신흥 IP (웹툰, 인디 소설) 조기 선점</li>
+                <li>라이선스 공동 투자 컨소시엄 결성 검토</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3-3: MEDIUM, 상시 -->
+        <div class="card risk-medium timing-ongoing visible" data-area="market" data-timing="ongoing" data-risk="medium" data-issue="3-3" data-keywords="라이브옵스 운영비 증가">
+          <div class="card-header">
+            <div class="card-title">3-3. 라이브옵스 운영비 증가</div>
+            <div class="card-badges">
+              <span class="risk-badge medium">🟡 MEDIUM</span>
+              <span class="timing-badge ongoing">🔄 상시</span>
+            </div>
+          </div>
+          <div class="card-body">
+            GaaS 모델 정착으로 지속 콘텐츠 업데이트·이벤트·CS 비용 상승. 유저 이탈 방지 위해 운영팀 규모·서버 비용 부담 지속.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>자동화 툴 도입 (이벤트 스케줄러, AI 챗봇 CS)</li>
+                <li>UGC 커뮤니티 활용, 유저 제작 콘텐츠로 업데이트 주기 연장</li>
+                <li>클라우드 스케일링으로 서버 비용 최적화</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3-4: OPPORTUNITY, 상시 -->
+        <div class="card risk-opportunity timing-ongoing visible" data-area="market" data-timing="ongoing" data-risk="opportunity" data-issue="3-4" data-keywords="신흥시장 모바일 확산">
+          <div class="card-header">
+            <div class="card-title">3-4. 신흥 시장 모바일 게임 확산</div>
+            <div class="card-badges">
+              <span class="risk-badge opportunity">🟢 OPPORTUNITY</span>
+              <span class="timing-badge ongoing">🔄 상시</span>
+            </div>
+          </div>
+          <div class="card-body">
+            동남아·중동·아프리카·남미에서 저가 스마트폰 보급 가속. 하이퍼캐주얼·미드코어 게임 수요 증가, 선점 기회 존재.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>저사양 최적화 버전 개발 (Unity Instant Game 등)</li>
+                <li>현지 언어·결제 수단(통신사 빌링) 지원</li>
+                <li>인플루언서 마케팅, 오프라인 이벤트 협업</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3-5: OPPORTUNITY, 단기 -->
+        <div class="card risk-opportunity timing-short visible" data-area="market" data-timing="short" data-risk="opportunity" data-issue="3-5" data-keywords="구독 게임 패스 성장">
+          <div class="card-header">
+            <div class="card-title">3-5. 구독 모델 게임 성장 (Game Pass, PS Plus 등)</div>
+            <div class="card-badges">
+              <span class="risk-badge opportunity">🟢 OPPORTUNITY</span>
+              <span class="timing-badge short">⚡ 단기</span>
+            </div>
+          </div>
+          <div class="card-body">
+            Xbox Game Pass, PS Plus, Apple Arcade 구독자 증가. 초기 수익 보장·노출 확대 장점, 인디 개발사에 안정적 현금 흐름 제공.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>Game Pass 등 구독 플랫폼 조기 입성 협상</li>
+                <li>Launch Day 구독 독점 딜 검토 (보장 수익 vs 판매가 트레이드오프)</li>
+                <li>구독 유입 유저 데이터 활용, 후속 DLC·시퀄 기획</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3-6: MEDIUM, 중기 -->
+        <div class="card risk-medium timing-mid visible" data-area="market" data-timing="mid" data-risk="medium" data-issue="3-6" data-keywords="개발자 AI 피로감 GDC">
+          <div class="card-header">
+            <div class="card-title">3-6. 개발자 AI 피로감 급증 (GDC 2026)</div>
+            <div class="card-badges">
+              <span class="risk-badge medium">🟡 MEDIUM</span>
+              <span class="timing-badge mid">📅 중기</span>
+            </div>
+          </div>
+          <div class="card-body">
+            GDC 2026 설문 결과 개발자 52%가 생성형 AI에 부정적 반응. 대량 해고·품질 저하 우려, 크리에이티브 과정 경시 우려 확산. 내부 반발 관리 필요.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>AI를 '인력 대체'가 아닌 '크리에이티브 보조' 프레임으로 전환</li>
+                <li>내부 AI 교육 프로그램 운영, 개발자 리스킬링 지원</li>
+                <li>외부 홍보 시 'AI 게임' 과도한 강조 지양, 인간 크리에이터 부각</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3-7: OPPORTUNITY, 상시 -->
+        <div class="card risk-opportunity timing-ongoing visible" data-area="market" data-timing="ongoing" data-risk="opportunity" data-issue="3-7" data-keywords="e스포츠 지역리그 활성화">
+          <div class="card-header">
+            <div class="card-title">3-7. e스포츠 지역 리그 활성화</div>
+            <div class="card-badges">
+              <span class="risk-badge opportunity">🟢 OPPORTUNITY</span>
+              <span class="timing-badge ongoing">🔄 상시</span>
+            </div>
+          </div>
+          <div class="card-body">
+            글로벌 대회 외 지역 리그(중동, 동남아, 남미) 투자 확대. 로컬 팬층 형성, 게임 수명 연장 효과. 브랜드 인지도 제고 기회.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>지역 토너먼트 후원, 로컬 팀 육성 지원</li>
+                <li>현지 인플루언서·방송사 파트너십</li>
+                <li>e스포츠 친화적 기능(관전 모드, 리플레이) 우선 개발</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 기술/운영 영역 -->
+        <!-- 4-1: MEDIUM, 상시 -->
+        <div class="card risk-medium timing-ongoing visible" data-area="tech" data-timing="ongoing" data-risk="medium" data-issue="4-1" data-keywords="개인정보 보호 GDPR CCPA">
+          <div class="card-header">
+            <div class="card-title">4-1. 개인정보 보호 규제 강화</div>
+            <div class="card-badges">
+              <span class="risk-badge medium">🟡 MEDIUM</span>
+              <span class="timing-badge ongoing">🔄 상시</span>
+            </div>
+          </div>
+          <div class="card-body">
+            GDPR, CCPA, 한국 개인정보보호법 등 글로벌 데이터 보호 규정 엄격화. 유저 동의 절차 복잡, 위반 시 매출 4% 벌금 리스크.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>데이터 최소 수집 원칙 준수, 불필요 데이터 삭제</li>
+                <li>동의 관리 플랫폼(CMP) 도입, 지역별 동의 플로우 최적화</li>
+                <li>정기 컴플라이언스 감사, 법무팀 교육</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4-2: OPPORTUNITY, 단기 -->
+        <div class="card risk-opportunity timing-short visible" data-area="tech" data-timing="short" data-risk="opportunity" data-issue="4-2" data-keywords="클라우드 게임 인프라 보급">
+          <div class="card-header">
+            <div class="card-title">4-2. 클라우드 게임 인프라 보급 (AWS, Azure 게임 전용 리전)</div>
+            <div class="card-badges">
+              <span class="risk-badge opportunity">🟢 OPPORTUNITY</span>
+              <span class="timing-badge short">⚡ 단기</span>
+            </div>
+          </div>
+          <div class="card-body">
+            AWS, Azure, GCP가 게임 전용 클라우드 서비스 확대. 저지연 글로벌 배포, 자동 스케일링, 비용 절감 도구 제공. 인프라 투자 부담 완화.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>멀티 클라우드 전략 (비용·성능 비교 후 최적 선택)</li>
+                <li>서버리스 아키텍처 도입, 트래픽 급증 대응</li>
+                <li>클라우드 크레딧·스타트업 프로그램 적극 활용</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4-3: OPPORTUNITY, 중기 -->
+        <div class="card risk-opportunity timing-mid visible" data-area="tech" data-timing="mid" data-risk="opportunity" data-issue="4-3" data-keywords="AI NPC 대화형 게임플레이">
+          <div class="card-header">
+            <div class="card-title">4-3. AI NPC·대화형 게임플레이 진화</div>
+            <div class="card-badges">
+              <span class="risk-badge opportunity">🟢 OPPORTUNITY</span>
+              <span class="timing-badge mid">📅 중기</span>
+            </div>
+          </div>
+          <div class="card-body">
+            LLM 기반 AI NPC가 자연스러운 대화·감정 표현 구현. 스토리 몰입도 증대, 리플레이 가치 향상. 차별화 무기로 부상.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>AI NPC 프로토타입 개발, 내부 테스트</li>
+                <li>안전장치 마련 (유해 발언 필터링, 콘텐츠 모니터링)</li>
+                <li>RPG·어드벤처 장르에 우선 적용, 차별화 포인트 홍보</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4-4: MEDIUM, 중기 -->
+        <div class="card risk-medium timing-mid visible" data-area="tech" data-timing="mid" data-risk="medium" data-issue="4-4" data-keywords="보안 취약점 DDoS 해킹">
+          <div class="card-header">
+            <div class="card-title">4-4. 보안 취약점 공격 증가</div>
+            <div class="card-badges">
+              <span class="risk-badge medium">🟡 MEDIUM</span>
+              <span class="timing-badge mid">📅 중기</span>
+            </div>
+          </div>
+          <div class="card-body">
+            DDoS, 계정 탈취, 치팅·핵 유포 증가. 온라인 게임 서비스 중단 시 브랜드 이미지 타격, 유저 이탈 리스크.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>DDoS 방어 솔루션 (Cloudflare, AWS Shield) 도입</li>
+                <li>2FA(이중 인증) 필수화, 계정 보안 강화</li>
+                <li>안티치트 솔루션 (EasyAntiCheat, BattlEye) 통합</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4-5: OPPORTUNITY, 중기 -->
+        <div class="card risk-opportunity timing-mid visible" data-area="tech" data-timing="mid" data-risk="opportunity" data-issue="4-5" data-keywords="크로스플랫폼 멀티플레이">
+          <div class="card-header">
+            <div class="card-title">4-5. 크로스플랫폼 멀티플레이 표준화</div>
+            <div class="card-badges">
+              <span class="risk-badge opportunity">🟢 OPPORTUNITY</span>
+              <span class="timing-badge mid">📅 중기</span>
+            </div>
+          </div>
+          <div class="card-body">
+            MS·Sony·Nintendo가 크로스플레이 정책 완화. 플랫폼 간 장벽 낮아져 유저풀 확대, 매칭 속도·커뮤니티 활성도 증가.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>크로스플레이 기능 초기 기획 단계부터 포함</li>
+                <li>통합 계정 시스템 구축 (Epic Online Services 등)</li>
+                <li>플랫폼 홀더와 기술 검증 조기 협의</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4-6: OPPORTUNITY, 상시 -->
+        <div class="card risk-opportunity timing-ongoing visible" data-area="tech" data-timing="ongoing" data-risk="opportunity" data-issue="4-6" data-keywords="오픈소스 게임엔진 Godot">
+          <div class="card-header">
+            <div class="card-title">4-6. 오픈소스 게임 엔진 성숙 (Godot 등)</div>
+            <div class="card-badges">
+              <span class="risk-badge opportunity">🟢 OPPORTUNITY</span>
+              <span class="timing-badge ongoing">🔄 상시</span>
+            </div>
+          </div>
+          <div class="card-body">
+            Godot 4.x, Bevy 등 오픈소스 엔진 기능 개선 가속. Unity·Unreal 라이선스 비용 부담 없이 고품질 게임 개발 가능. 인디 개발사에 유리.
+          </div>
+          <div class="card-actions">
+            <button class="expand-btn" onclick="toggleCard(event)">대응 방향 보기</button>
+          </div>
+          <div class="card-action">
+            <div class="action-content">
+              <strong>대응 방향:</strong>
+              <ul>
+                <li>Godot 프로토타입 프로젝트 시작, 기술 검증</li>
+                <li>커뮤니티 기여 (버그 리포트, 플러그인 개발)로 생태계 참여</li>
+                <li>중소 규모 프로젝트에 우선 적용, 비용 절감 효과 측정</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 빈 상태 -->
+      <div class="empty-state" id="emptyState">
+        <div class="empty-state-icon">🔍</div>
+        <h3>검색 결과가 없습니다</h3>
+        <p>필터 조건을 변경하거나 다른 키워드로 검색해보세요.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentArea = 'all';
+    let currentTiming = 'all';
+    let currentRisk = 'all';
+    let searchQuery = '';
+
+    // 탭 전환
+    function filterByArea(area) {
+      currentArea = area;
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      event.target.classList.add('active');
+      applyFilters();
+    }
+
+    // 시급성 필터
+    function filterByTiming(timing) {
+      currentTiming = timing;
+      document.querySelectorAll('.filter-buttons')[0].querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      applyFilters();
+    }
+
+    // 리스크 레벨 필터
+    function filterByRisk(risk) {
+      currentRisk = risk;
+      document.querySelectorAll('.filter-buttons')[1].querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      applyFilters();
+    }
+
+    // 검색
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      searchQuery = e.target.value.toLowerCase();
+      applyFilters();
+    });
+
+    // 필터 적용
+    function applyFilters() {
+      const cards = document.querySelectorAll('.card');
+      let visibleCount = 0;
+      let highCount = 0, mediumCount = 0, oppCount = 0;
+
+      cards.forEach(card => {
+        const area = card.dataset.area;
+        const timing = card.dataset.timing;
+        const risk = card.dataset.risk;
+        const keywords = card.dataset.keywords?.toLowerCase() || '';
+        const title = card.querySelector('.card-title')?.textContent.toLowerCase() || '';
+        const body = card.querySelector('.card-body')?.textContent.toLowerCase() || '';
+
+        const matchArea = currentArea === 'all' || area === currentArea;
+        const matchTiming = currentTiming === 'all' || timing === currentTiming;
+        const matchRisk = currentRisk === 'all' || risk === currentRisk;
+        const matchSearch = searchQuery === '' || 
+          title.includes(searchQuery) || 
+          body.includes(searchQuery) || 
+          keywords.includes(searchQuery);
+
+        if (matchArea && matchTiming && matchRisk && matchSearch) {
+          card.classList.add('visible');
+          visibleCount++;
+          if (risk === 'high') highCount++;
+          else if (risk === 'medium') mediumCount++;
+          else if (risk === 'opportunity') oppCount++;
+        } else {
+          card.classList.remove('visible');
+          card.classList.remove('expanded');
+        }
+      });
+
+      // 통계 업데이트
+      document.getElementById('totalCount').textContent = visibleCount;
+      document.getElementById('highCount').textContent = highCount;
+      document.getElementById('mediumCount').textContent = mediumCount;
+      document.getElementById('oppCount').textContent = oppCount;
+
+      // 빈 상태 표시
+      const emptyState = document.getElementById('emptyState');
+      if (visibleCount === 0) {
+        emptyState.classList.add('visible');
+      } else {
+        emptyState.classList.remove('visible');
+      }
+    }
+
+    // 카드 확장/축소
+    function toggleCard(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const card = event.target.closest('.card');
+      if (card) {
+        card.classList.toggle('expanded');
+      }
+    }
+
+    // 카드 클릭으로도 확장
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('click', (e) => {
+          if (!e.target.classList.contains('expand-btn')) {
+            card.classList.toggle('expanded');
+          }
+        });
+      });
+    });
+
+    // 히트맵에서 카드로 스크롤
+    function scrollToCard(issueId) {
+      const targetCard = document.querySelector(`[data-issue="${issueId}"]`);
+      if (targetCard) {
+        // 필터 초기화
+        currentArea = 'all';
+        currentTiming = 'all';
+        currentRisk = 'all';
+        searchQuery = '';
+        document.getElementById('searchInput').value = '';
+        
+        // 탭/필터 UI 초기화
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+        document.querySelector('.tab').classList.add('active');
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.filter-btn')[0].classList.add('active');
+        document.querySelectorAll('.filter-buttons')[1].querySelectorAll('.filter-btn')[0].classList.add('active');
+        
+        applyFilters();
+        
+        setTimeout(() => {
+          targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          targetCard.classList.add('highlight-pulse');
+          setTimeout(() => targetCard.classList.remove('highlight-pulse'), 2000);
+        }, 100);
+      }
+    }
+
+    // 초기 통계 설정
+    applyFilters();
+  </script>
+</body>
+</html>
